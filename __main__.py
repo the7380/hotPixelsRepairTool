@@ -2,6 +2,7 @@ import sys
 
 import bad_pixels_mask as bpm
 import bad_pixels_fixer as bpf
+import bad_pixels_emulator as bme
 
 if __name__ == '__main__':
     cli_params = sys.argv[1:]
@@ -35,3 +36,6 @@ if __name__ == '__main__':
                 raise Exception("The algorithm type is not set")
 
         bpf.start(**params)
+
+    if "emulation" in cli_params:
+        bme.start()
