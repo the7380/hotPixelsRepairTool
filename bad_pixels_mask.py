@@ -33,7 +33,8 @@ def search_bad_pixels_in_img(img, set_of_bad_pixels):
                 set_of_bad_pixels.add((i, j))
 
 
-def make_mask(arr_bad_pixels, rows, cols):
+
+def make_mask(set_of_bad_pixels, rows, cols):
     image = numpy.zeros((rows, cols, 3), numpy.uint8)  # creating blank image
 
     for i in range(rows):
