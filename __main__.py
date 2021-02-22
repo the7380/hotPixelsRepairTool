@@ -7,7 +7,11 @@ if __name__ == '__main__':
     cli_params = sys.argv[1:]
 
     if "detect" in cli_params:
-        bpm.start()
+        index = cli_params.index("detect")
+        if index + 1 < len(cli_params) and cli_params[index + 1] == "--highlight":
+            bpm.start(highlight=True)
+        else:
+            bpm.start()
 
     if "fix" in cli_params:
         index = cli_params.index("fix")
