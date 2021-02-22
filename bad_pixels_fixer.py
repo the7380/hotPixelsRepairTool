@@ -6,6 +6,7 @@ import piexif
 import datetime
 import time
 
+from multiprocessing import Process, cpu_count
 from PIL import Image
 
 import utils as u
@@ -27,8 +28,36 @@ def start(replace_mode=False, algorithm="TELEA"):
 
     file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
-    for file in file_names:
-        fix_image_by_mask(file, bpm.path_to_bpm_dir + bpm.mask_file_name)
+    multiprocessing_start(file_names)
+
+
+def multiprocessing_start(file_names):
+    processes = []
+    cpu_number = cpu_count()
+    task_per_cpu = len(file_names) // cpu_number
+
+    cpu_tasks = []
+    if task_per_cpu > 0:
+        for x in range(cpu_number):
+            cpu_tasks.append([])
+            cpu_tasks[x].extend(file_names[x * task_per_cpu:(x + 1) * task_per_cpu])
+        cpu_tasks[cpu_number - 1].extend(file_names[task_per_cpu * cpu_number - 1:len(file_names) - 1])
+    else:
+        cpu_tasks.append([])
+        cpu_tasks[0].extend(file_names)
+
+    for tasks in cpu_tasks:
+        proc = Process(target=fix_image_by_mask_caller, args=(tasks, bpm.path_to_bpm_dir + bpm.mask_file_name))
+        processes.append(proc)
+        proc.start()
+
+    for proc in processes:
+        proc.join()
+
+
+def fix_image_by_mask_caller(tasks, mask_path):
+    for el in tasks:
+        fix_image_by_mask(el, mask_path)
 
 
 def fix_image_by_mask(img_name, mask_path):
