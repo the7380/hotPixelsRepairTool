@@ -21,7 +21,7 @@ def start(replace_mode=False):
     global REPLACE_MODE
     REPLACE_MODE = replace_mode
 
-    file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ['jpg', 'jpeg', 'png'])
+    file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
     for file in file_names:
         fix_image_by_mask(file, bpm.path_to_bpm_dir + bpm.mask_file_name)

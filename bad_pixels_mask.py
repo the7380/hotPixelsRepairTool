@@ -15,7 +15,7 @@ def start(highlight=False):
     global DETECT_HIGHLIGHT
     DETECT_HIGHLIGHT = highlight
 
-    file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ['jpg', 'jpeg', 'png'])
+    file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ('jpg', 'jpeg', 'png'))
     make_bad_pixels_mask(path_to_bpm_dir, file_names)
 
 
@@ -47,7 +47,7 @@ def make_mask(set_of_bad_pixels, rows, cols):
 
     for el in set_of_bad_pixels:
         i, j = el
-        image[i, j] = [255, 255, 255]
+        image[i, j] = (255, 255, 255)
 
     cv2.imwrite(path_to_bpm_dir + mask_file_name, image)
 
@@ -95,10 +95,7 @@ def highlight_pixels(img, img_name, base_dir, pixels_coords):
     cv2.imwrite(base_dir + highlight_file_prefix + img_name, img)
 
 
-def safe_painting(img, pixel_coords, color=None):
-    if color is None:
-        color = [255, 255, 0]
-
+def safe_painting(img, pixel_coords, color=(255, 255, 0)):
     i, j = pixel_coords
     max_i, max_j, depth = img.shape
     if 0 <= i < max_i and 0 <= j <= max_j:
