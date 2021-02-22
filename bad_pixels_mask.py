@@ -78,6 +78,10 @@ def make_bad_pixels_mask(base_dir, bad_pixels_image_names):
             highlight_pixels(img, img_name, path_to_bpm_dir, current_set_of_bad_pixels)
 
     make_mask(set_of_bad_pixels, first_img_rows, first_img_cols)
+    with open(base_dir + "hotpixels.txt", "w", encoding="UTF-8") as file:
+        for el in set_of_bad_pixels:
+            x, y = el
+            file.writelines(str(x) + " " + str(y) + "\n")
 
 
 def highlight_pixels(img, img_name, base_dir, pixels_coords):
