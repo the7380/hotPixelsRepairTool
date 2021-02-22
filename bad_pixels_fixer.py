@@ -61,6 +61,8 @@ def fix_image_by_mask_caller(tasks, mask_path):
 
 
 def fix_image_by_mask(img_name, mask_path):
+    print("Fixing " + img_name)
+
     img = cv2.imread(path_to_input_bpf_dir + img_name)
     mask = cv2.imread(mask_path, 0)
 
