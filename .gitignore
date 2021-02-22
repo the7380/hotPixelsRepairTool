@@ -1,0 +1,6 @@
+# dirs
+/venv/
+/.idea/
+
+# files
+/ideas.txt
