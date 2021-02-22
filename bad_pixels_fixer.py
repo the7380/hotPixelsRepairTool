@@ -40,7 +40,7 @@ def multiprocessing_start(file_names, algorithm, replace_mode):
 
     for tasks in cpu_tasks:
         proc = Process(target=fix_image_by_mask_caller,
-                       args=(tasks, bpm.path_to_bpm_dir + bpm.mask_file_name, algorithm, replace_mode))
+                       args=(tasks, cns.PATH_TO_DETECT_DIR + cns.PATH_TO_MASK_FILE, algorithm, replace_mode))
         processes.append(proc)
         proc.start()
 

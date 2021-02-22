@@ -12,7 +12,7 @@ path_to_input_bpf_dir = cns.PATH_TO_INPUT_DIR
 def start():
     file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
-    mask_coordinates = get_mask_coordinates_from_file(bpm.path_to_bpm_dir + cns.PATH_TO_HOTPIXELS_FILE)
+    mask_coordinates = get_mask_coordinates_from_file(cns.PATH_TO_DETECT_DIR + cns.PATH_TO_HOTPIXELS_FILE)
 
     for file in file_names:
         spoil_image(file, path_to_input_bpf_dir, file, path_to_input_emulated_dir, mask_coordinates)
