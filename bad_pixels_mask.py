@@ -10,7 +10,7 @@ DETECT_THRESHOLD = 10
 
 def start():
     file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ['jpg', 'jpeg', 'png'])
-    make_bad_pixels_mask(path_to_bpm_dir + file_names[0])
+    make_bad_pixels_mask(path_to_bpm_dir, file_names)
 
 
 def calc_avg_color(img):
@@ -19,13 +19,11 @@ def calc_avg_color(img):
     return avg_color
 
 
-def search_bad_pixels_in_img(img):
+def search_bad_pixels_in_img(img, set_of_bad_pixels):
     avg_color = calc_avg_color(img)
     ar, ag, ab = avg_color
 
     rows, cols, depth = img.shape
-
-    result = []
 
     for i in range(rows):
         for j in range(cols):
@@ -40,16 +38,28 @@ def make_mask(arr_bad_pixels, rows, cols):
 
     for i in range(rows):
         for j in range(cols):
-            if [i, j] in arr_bad_pixels:
+            if (i, j) in arr_bad_pixels:
                 image[i, j] = [255, 255, 255]
 
     cv2.imwrite(path_to_bpm_dir + mask_file_name, image)
 
 
-def make_bad_pixels_mask(bad_pixels_img_path):
-    img = cv2.imread(bad_pixels_img_path)
+def make_bad_pixels_mask(base_dir, bad_pixels_image_names):
+    set_of_bad_pixels = set()
 
-    arr_bad_pixels = search_bad_pixels_in_img(img)
+    tmp_img = cv2.imread(base_dir + bad_pixels_image_names[0])
+    first_img_rows, first_img_cols, depth = tmp_img.shape
 
-    rows, cols, depth = img.shape
-    make_mask(arr_bad_pixels, rows, cols)
+    for img_name in bad_pixels_image_names:
+        if img_name == mask_file_name:
+            continue
+
+        img = cv2.imread(base_dir + img_name)
+        rows, cols, depth = img.shape
+
+        if rows != first_img_rows or first_img_cols != first_img_cols:
+            raise Exception('The dimensions of the images in detect directory are different')
+
+        search_bad_pixels_in_img(img, set_of_bad_pixels)
+
+    make_mask(set_of_bad_pixels, first_img_rows, first_img_cols)
