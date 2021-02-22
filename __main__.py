@@ -9,8 +9,7 @@ if __name__ == '__main__':
     if "detect" in cli_params:
         params = dict()
 
-        index = cli_params.index("detect")
-        if index + 1 < len(cli_params) and cli_params[index + 1] == "--highlight":
+        if "--highlight" in cli_params:
             params['highlight'] = True
 
         bpm.start(**params)
@@ -18,8 +17,7 @@ if __name__ == '__main__':
     if "fix" in cli_params:
         params = dict()
 
-        index = cli_params.index("fix")
-        if index + 1 < len(cli_params) and cli_params[index + 1] == "--replace":
+        if "--replace" in cli_params:
             params['replace_mode'] = True
 
         bpf.start(**params)
