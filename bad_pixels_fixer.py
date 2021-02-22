@@ -11,15 +11,16 @@ from PIL import Image
 
 import utils as u
 import bad_pixels_mask as bpm
+import constants as cns
 
-path_to_input_bpf_dir = "./_input/"
-path_to_output_bpf_dir = "./_output/"
+path_to_input_bpf_dir = cns.PATH_TO_INPUT_DIR
+path_to_output_bpf_dir = cns.PATH_TO_OUTPUT_DIR
 
 
-def start(replace_mode=False, algorithm="TELEA"):
+def start(replace=False, algorithm="TELEA"):
     file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
-    multiprocessing_start(file_names, algorithm, replace_mode)
+    multiprocessing_start(file_names, algorithm, replace)
 
 
 def multiprocessing_start(file_names, algorithm, replace_mode):

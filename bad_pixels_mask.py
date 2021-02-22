@@ -2,15 +2,12 @@ import cv2
 import numpy
 
 import utils as u
-
-path_to_bpm_dir = "./_detect/"
-mask_file_name = "bad_pixels_mask.png"
-highlight_file_prefix = "highlight_"
+import constants as cns
 
 
 def start(highlight=False, threshold=10):
-    file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ('jpg', 'jpeg', 'png'))
-    make_bad_pixels_mask(path_to_bpm_dir, file_names, highlight, threshold)
+    file_names = u.get_files_from_dir_with_ext(cns.PATH_TO_DETECT_DIR, ('jpg', 'jpeg', 'png'))
+    make_bad_pixels_mask(cns.PATH_TO_DETECT_DIR, file_names, highlight, threshold)
 
 
 def calc_avg_color(img):
@@ -43,7 +40,7 @@ def make_mask(set_of_bad_pixels, rows, cols):
         i, j = el
         image[i, j] = (255, 255, 255)
 
-    cv2.imwrite(path_to_bpm_dir + mask_file_name, image)
+    cv2.imwrite(cns.PATH_TO_DETECT_DIR + cns.PATH_TO_MASK_FILE, image)
 
 
 def make_bad_pixels_mask(base_dir, bad_pixels_image_names, highlight, threshold):
@@ -53,7 +50,7 @@ def make_bad_pixels_mask(base_dir, bad_pixels_image_names, highlight, threshold)
     first_img_rows, first_img_cols, depth = tmp_img.shape
 
     for img_name in bad_pixels_image_names:
-        if img_name == mask_file_name or img_name.startswith(highlight_file_prefix):
+        if img_name == cns.PATH_TO_MASK_FILE or img_name.startswith(cns.HIGHLIGHT_FILE_PREFIX):
             continue
 
         img = cv2.imread(base_dir + img_name)
@@ -66,10 +63,10 @@ def make_bad_pixels_mask(base_dir, bad_pixels_image_names, highlight, threshold)
         set_of_bad_pixels.update(current_set_of_bad_pixels)
 
         if highlight:
-            highlight_pixels(img, img_name, path_to_bpm_dir, current_set_of_bad_pixels)
+            highlight_pixels(img, img_name, cns.PATH_TO_DETECT_DIR, current_set_of_bad_pixels)
 
     make_mask(set_of_bad_pixels, first_img_rows, first_img_cols)
-    with open(base_dir + "hotpixels.txt", "w", encoding="UTF-8") as file:
+    with open(base_dir + cns.PATH_TO_HOTPIXELS_FILE, "w", encoding="UTF-8") as file:
         for el in set_of_bad_pixels:
             x, y = el
             file.writelines(str(x) + " " + str(y) + "\n")
@@ -90,7 +87,7 @@ def highlight_pixels(img, img_name, base_dir, pixels_coords):
         safe_painting(img, (i, j - 4))
         safe_painting(img, (i, j - 5))
 
-    cv2.imwrite(base_dir + highlight_file_prefix + img_name, img)
+    cv2.imwrite(base_dir + cns.HIGHLIGHT_FILE_PREFIX + img_name, img)
 
 
 def safe_painting(img, pixel_coords, color=(255, 255, 0)):
