@@ -12,14 +12,18 @@ import utils as u
 import bad_pixels_mask as bpm
 
 REPLACE_MODE = False
+ALGORITHM = "TELEA"
 
 path_to_input_bpf_dir = "./_input/"
 path_to_output_bpf_dir = "./_output/"
 
 
-def start(replace_mode=False):
+def start(replace_mode=False, algorithm="TELEA"):
     global REPLACE_MODE
     REPLACE_MODE = replace_mode
+
+    global ALGORITHM
+    ALGORITHM = algorithm
 
     file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
@@ -31,7 +35,13 @@ def fix_image_by_mask(img_name, mask_path):
     img = cv2.imread(path_to_input_bpf_dir + img_name)
     mask = cv2.imread(mask_path, 0)
 
-    dst = cv2.inpaint(img, mask, 3, cv2.INPAINT_TELEA)
+    if ALGORITHM == "TELEA":
+        dst = cv2.inpaint(img, mask, 3, cv2.INPAINT_TELEA)
+    elif ALGORITHM == "NS":
+        dst = cv2.inpaint(img, mask, 3, cv2.INPAINT_NS)
+    else:
+        raise Exception("Incorrect inpainting algorithm")
+
     filename, file_extension = os.path.splitext(img_name)
 
     if not REPLACE_MODE:

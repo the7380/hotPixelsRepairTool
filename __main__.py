@@ -27,4 +27,11 @@ if __name__ == '__main__':
         if "--replace" in cli_params:
             params['replace_mode'] = True
 
+        if "--algorithm" in cli_params:
+            index = cli_params.index("--algorithm")
+            if index + 1 < len(cli_params):
+                params['algorithm'] = cli_params[index + 1].upper()
+            else:
+                raise Exception("The algorithm type is not set")
+
         bpf.start(**params)
