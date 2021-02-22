@@ -6,6 +6,7 @@ import utils as u
 path_to_bpm_dir = "./_detect/"
 mask_file_name = "bad_pixels_mask.png"
 
+DETECT_THRESHOLD = 10
 
 def start():
     file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ['jpg', 'jpeg', 'png'])
@@ -30,10 +31,8 @@ def search_bad_pixels_in_img(img):
         for j in range(cols):
             r, g, b = img[i, j]
 
-            if r > ar or g > ag or b > ab:
-                result.append([i, j])
-
-    return result
+            if abs(r - ar) > DETECT_THRESHOLD or abs(g > ag) > DETECT_THRESHOLD or abs(b > ab) > DETECT_THRESHOLD:
+                set_of_bad_pixels.add((i, j))
 
 
 def make_mask(arr_bad_pixels, rows, cols):
