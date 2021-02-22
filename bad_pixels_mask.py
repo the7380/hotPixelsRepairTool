@@ -7,19 +7,10 @@ path_to_bpm_dir = "./_detect/"
 mask_file_name = "bad_pixels_mask.png"
 highlight_file_prefix = "highlight_"
 
-DETECT_THRESHOLD = 10
-DETECT_HIGHLIGHT = False
-
 
 def start(highlight=False, threshold=10):
-    global DETECT_HIGHLIGHT
-    DETECT_HIGHLIGHT = highlight
-
-    global DETECT_THRESHOLD
-    DETECT_THRESHOLD = threshold
-
     file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ('jpg', 'jpeg', 'png'))
-    make_bad_pixels_mask(path_to_bpm_dir, file_names)
+    make_bad_pixels_mask(path_to_bpm_dir, file_names, highlight, threshold)
 
 
 def calc_avg_color(img):
@@ -28,7 +19,7 @@ def calc_avg_color(img):
     return avg_color
 
 
-def search_bad_pixels_in_img(img):
+def search_bad_pixels_in_img(img, threshold):
     avg_color = calc_avg_color(img)
     ar, ag, ab = avg_color
     set_of_bad_pixels = set()
@@ -39,7 +30,7 @@ def search_bad_pixels_in_img(img):
         for j in range(cols):
             r, g, b = img[i, j]
 
-            if abs(r - ar) > DETECT_THRESHOLD or abs(g > ag) > DETECT_THRESHOLD or abs(b > ab) > DETECT_THRESHOLD:
+            if abs(r - ar) > threshold or abs(g > ag) > threshold or abs(b > ab) > threshold:
                 set_of_bad_pixels.add((i, j))
 
     return set_of_bad_pixels
@@ -55,7 +46,7 @@ def make_mask(set_of_bad_pixels, rows, cols):
     cv2.imwrite(path_to_bpm_dir + mask_file_name, image)
 
 
-def make_bad_pixels_mask(base_dir, bad_pixels_image_names):
+def make_bad_pixels_mask(base_dir, bad_pixels_image_names, highlight, threshold):
     set_of_bad_pixels = set()
 
     tmp_img = cv2.imread(base_dir + bad_pixels_image_names[0])
@@ -71,10 +62,10 @@ def make_bad_pixels_mask(base_dir, bad_pixels_image_names):
         if rows != first_img_rows or first_img_cols != first_img_cols:
             raise Exception('The dimensions of the images in detect directory are different')
 
-        current_set_of_bad_pixels = search_bad_pixels_in_img(img)
+        current_set_of_bad_pixels = search_bad_pixels_in_img(img, threshold)
         set_of_bad_pixels.update(current_set_of_bad_pixels)
 
-        if DETECT_HIGHLIGHT:
+        if highlight:
             highlight_pixels(img, img_name, path_to_bpm_dir, current_set_of_bad_pixels)
 
     make_mask(set_of_bad_pixels, first_img_rows, first_img_cols)

@@ -12,26 +12,17 @@ from PIL import Image
 import utils as u
 import bad_pixels_mask as bpm
 
-REPLACE_MODE = False
-ALGORITHM = "TELEA"
-
 path_to_input_bpf_dir = "./_input/"
 path_to_output_bpf_dir = "./_output/"
 
 
 def start(replace_mode=False, algorithm="TELEA"):
-    global REPLACE_MODE
-    REPLACE_MODE = replace_mode
-
-    global ALGORITHM
-    ALGORITHM = algorithm
-
     file_names = u.get_files_from_dir_with_ext(path_to_input_bpf_dir, ('jpg', 'jpeg', 'png'))
 
-    multiprocessing_start(file_names)
+    multiprocessing_start(file_names, algorithm, replace_mode)
 
 
-def multiprocessing_start(file_names):
+def multiprocessing_start(file_names, algorithm, replace_mode):
     processes = []
     cpu_number = cpu_count()
     task_per_cpu = len(file_names) // cpu_number
@@ -47,7 +38,8 @@ def multiprocessing_start(file_names):
         cpu_tasks[0].extend(file_names)
 
     for tasks in cpu_tasks:
-        proc = Process(target=fix_image_by_mask_caller, args=(tasks, bpm.path_to_bpm_dir + bpm.mask_file_name))
+        proc = Process(target=fix_image_by_mask_caller,
+                       args=(tasks, bpm.path_to_bpm_dir + bpm.mask_file_name, algorithm, replace_mode))
         processes.append(proc)
         proc.start()
 
@@ -55,27 +47,27 @@ def multiprocessing_start(file_names):
         proc.join()
 
 
-def fix_image_by_mask_caller(tasks, mask_path):
+def fix_image_by_mask_caller(tasks, mask_path, algorithm, replace_mode):
     for el in tasks:
-        fix_image_by_mask(el, mask_path)
+        fix_image_by_mask(el, mask_path, algorithm, replace_mode)
 
 
-def fix_image_by_mask(img_name, mask_path):
+def fix_image_by_mask(img_name, mask_path, algorithm, replace_mode):
     print("Fixing " + img_name)
 
     img = cv2.imread(path_to_input_bpf_dir + img_name)[..., ::-1]  # RGB, not BGR
     mask = cv2.imread(mask_path, 0)
 
-    if ALGORITHM == "TELEA":
+    if algorithm == "TELEA":
         dst = cv2.inpaint(img, mask, 3, cv2.INPAINT_TELEA)
-    elif ALGORITHM == "NS":
+    elif algorithm == "NS":
         dst = cv2.inpaint(img, mask, 3, cv2.INPAINT_NS)
     else:
         raise Exception("Incorrect inpainting algorithm")
 
     filename, file_extension = os.path.splitext(img_name)
 
-    if not REPLACE_MODE:
+    if not replace_mode:
         save_file_with_metadata_from_another_file(path_to_input_bpf_dir + filename + file_extension,
                                                   path_to_output_bpf_dir + filename + file_extension,
                                                   dst)

@@ -16,7 +16,7 @@ if __name__ == '__main__':
         if "--threshold" in cli_params:
             index = cli_params.index("--threshold")
             if index + 1 < len(cli_params):
-                params['threshold'] = cli_params[index + 1]
+                params['threshold'] = int(cli_params[index + 1])
             else:
                 raise Exception("The threshold value is not set")
 
