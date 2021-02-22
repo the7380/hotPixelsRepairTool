@@ -12,6 +12,13 @@ if __name__ == '__main__':
         if "--highlight" in cli_params:
             params['highlight'] = True
 
+        if "--threshold" in cli_params:
+            index = cli_params.index("--threshold")
+            if index + 1 < len(cli_params):
+                params['threshold'] = cli_params[index + 1]
+            else:
+                raise Exception("The threshold value is not set")
+
         bpm.start(**params)
 
     if "fix" in cli_params:

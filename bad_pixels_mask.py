@@ -11,9 +11,12 @@ DETECT_THRESHOLD = 10
 DETECT_HIGHLIGHT = False
 
 
-def start(highlight=False):
+def start(highlight=False, threshold=10):
     global DETECT_HIGHLIGHT
     DETECT_HIGHLIGHT = highlight
+
+    global DETECT_THRESHOLD
+    DETECT_THRESHOLD = threshold
 
     file_names = u.get_files_from_dir_with_ext(path_to_bpm_dir, ('jpg', 'jpeg', 'png'))
     make_bad_pixels_mask(path_to_bpm_dir, file_names)
