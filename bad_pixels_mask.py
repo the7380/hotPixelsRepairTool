@@ -33,13 +33,13 @@ def search_bad_pixels_in_img(img, set_of_bad_pixels):
                 set_of_bad_pixels.add((i, j))
 
 
-def make_mask(arr_bad_pixels, rows, cols):
+
+def make_mask(set_of_bad_pixels, rows, cols):
     image = numpy.zeros((rows, cols, 3), numpy.uint8)  # creating blank image
 
-    for i in range(rows):
-        for j in range(cols):
-            if (i, j) in arr_bad_pixels:
-                image[i, j] = [255, 255, 255]
+    for el in set_of_bad_pixels:
+        i, j = el
+        image[i, j] = [255, 255, 255]
 
     cv2.imwrite(path_to_bpm_dir + mask_file_name, image)
 
